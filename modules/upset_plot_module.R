@@ -72,7 +72,7 @@ upset_plot_Server <- function(input,output,session,current_phecode,current_descr
          combinations = combn(colnames(upset_data),i,simplify = F)
          for (comb in combinations) {
            intersection <- calculate_intersection(comb, upset_data)
-           upset_results[[paste(comb, collapse = "-")]] <- intersection
+           upset_results[[paste(comb, collapse = "/")]] <- intersection
          }
        }
 
@@ -81,8 +81,8 @@ upset_plot_Server <- function(input,output,session,current_phecode,current_descr
          keep(~all(.!=0)) %>%
          map_df(.,as_tibble,.id = "pattern") %>%
          rename(count=value) %>%
-         mutate(code = str_count(pattern,"-")+1) %>%
-         arrange(code,desc(count))
+         mutate(code = str_count(pattern,"/")+1) %>%
+         arrange(code,desc(count)) 
 
        marginalData = upset_results %>%
          filter(code == 1) %>%
@@ -130,7 +130,7 @@ upset_plot_Server <- function(input,output,session,current_phecode,current_descr
          rownames(upset_data) = unique(unlist(upset_dat_res))
        } else {
          colname = names(upset_data)[1]
-         upset_data = data.frame(upset_data)
+         upset_data = data.frame(as.matrix(upset_data))
          colnames(upset_data) = colname
          rownames(upset_data) = unique(unlist(upset_dat_res))
        }
@@ -140,7 +140,7 @@ upset_plot_Server <- function(input,output,session,current_phecode,current_descr
          combinations = combn(colnames(upset_data),i,simplify = F)
          for (comb in combinations) {
            intersection <- calculate_intersection(comb, upset_data)
-           upset_results[[paste(comb, collapse = "-")]] <- intersection
+           upset_results[[paste(comb, collapse = "/")]] <- intersection
          }
        }
        
@@ -149,7 +149,7 @@ upset_plot_Server <- function(input,output,session,current_phecode,current_descr
          keep(~all(.!=0)) %>%
          map_df(.,as_tibble,.id = "pattern") %>%
          rename(count=value) %>%
-         mutate(code = str_count(pattern,"-")+1) %>%
+         mutate(code = str_count(pattern,"/")+1) %>%
          arrange(code,desc(count))
        
        marginalData = upset_results %>%

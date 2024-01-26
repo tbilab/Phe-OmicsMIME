@@ -56,7 +56,7 @@ const padded = svg.append('g')
 const codeList = Object.keys(
   data
   .reduce(
-    (all, current) => [...all, ...(current.pattern.split('-'))],
+    (all, current) => [...all, ...(current.pattern.split('/'))],
     []
   ).reduce(
     (codeDict, currentCode) => Object.assign(codeDict, {[currentCode]: 1}),
@@ -142,7 +142,7 @@ matrixChart.selectAll('.currentRow')
     
     // bars that go accross
     const codePositions = currentEntry.pattern
-      .split('-')
+      .split('/')
       .map(d => matrixWidthScale(d) + matrixWidthScale.bandwidth()/2);
     
     const rangeOfPattern = d3.extent(codePositions)

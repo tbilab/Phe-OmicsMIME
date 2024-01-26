@@ -80,7 +80,7 @@ shared_info_Server <- function(input,output,session,current_phecode,current_desc
       mutate(type = ifelse(ID %in% phecode_def$description,"phenotype",type))
     
     ##selected node ID
-    code_id <- reactive(glue("NULL"))
+    code_id <- reactiveVal(glue("NULL"))
     output$node_info <- renderText(glue("{code_id()}"))
     ##1st layer connected nodes information
     output$conn_first_table <- renderDT({
@@ -168,12 +168,12 @@ shared_info_Server <- function(input,output,session,current_phecode,current_desc
       mutate(type = ifelse(ID %in% phecode_def$description,"phenotype",type))
     
     ##selected node ID
-    code_id <- reactive(glue("{clicked_node_id()};"))
+    code_id <- reactiveVal(glue("{clicked_node_id()};"))
     output$node_info <- renderText(glue("{code_id()}"))
     observeEvent(return_preselected(),{
-      code_id <- reactive(glue(NULL))
+      code_id <- code_id(glue(NULL))
       output$node_info <- renderText(glue("{code_id()}"))
-      
+
       ##1st layer connected nodes information
       output$conn_first_table <- renderDT({
         datatable(data.frame(ID=c(),type=c()),
@@ -186,7 +186,7 @@ shared_info_Server <- function(input,output,session,current_phecode,current_desc
                   )
         )
       },server = FALSE)
-      
+
       ##2nd layer connected nodes information
       output$conn_second_table <- renderDT({
         datatable(data.frame(ID=c(),type=c()),

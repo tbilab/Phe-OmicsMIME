@@ -30,8 +30,8 @@ multipartite_network_UI = function(id,app_ns){
                         withSpinner(r2d3::d3Output(ns("network"),width = "100%",height="60vh"),
                                     hide.ui = FALSE)
                        ), #column
-                 column(7,""),
-                 column(5,actionButton(ns("return"), "Revert to pre-selected network",style="font-size: 1.5rem;float:left;background-color:#D3D3D3;")),
+                 column(9,""),
+                 column(3,actionButton(ns("return"), "Revert to pre-selected network",style="font-size: 1.5rem;float:left;background-color:#D3D3D3;")),
                       )#fluidrow
               ) #box
            )
