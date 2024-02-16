@@ -8,6 +8,7 @@ source('modules/info_panel_module.R')
 source('modules/multipartite_network_module.R')
 source('modules/shared_info_module.R')
 source('modules/upset_plot_module.R')
+source("modules/shared_pathways_module.R")
 
 starting_code <- c("250.20","250.70","272.10","278.10","401.10","594.10","296.20")
 # starting_code <- c("other aUPD","overlap v617f aUPD","GGCC/GGCC","GGCC/TCTT")
@@ -25,7 +26,7 @@ ui <- shinyUI(
     # hr(),
     mainPanel(
       width = 12,
-      # includeCSS("inst/custom.css"),
+      includeCSS("inst/custom.css"),
       shinyjs::useShinyjs(debug = TRUE),
       uiOutput("ui")
     )

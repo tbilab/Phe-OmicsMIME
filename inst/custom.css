@@ -1,0 +1,80 @@
+.box-title {
+  font-family: "Georgia", Times, "Times New Roman", serif; 
+}
+
+.box-body {
+  margin-top: -10px;
+  padding-bottom:0px;
+}
+
+.subtitle {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 5px;
+  font-weight: bold;
+  font-family: "Georgia", Times, "Times New Roman", serif;
+}
+
+.buttonstyle{
+  box-shadow: 0px 0px 2px 2px rgb(0,0,0)
+  /*box-shadow: rgba(255,255,255,.6) 0 1px 0 inset;*/
+  background-color: white; /* Green */
+ border-color:#ACE1AF;
+    border-radius:10px;
+  padding: 5px 5px;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+}
+
+.buttonstyle:hover {
+  background-color: #ACE1AF;
+  border-color:#ACE1AF;
+  border-radius:10px;
+  padding: 5px 5px;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+}
+.buttonstyle:focus {
+    outline-color: transparent;
+    outline-style:solid;
+    box-shadow: 0 0 0 4px #ACE1AF;
+}
+
+.buttonstyle1{
+  box-shadow: 0px 0px 2px 2px rgb(0,0,0)
+  background-color: white; /* Green */
+ border-color:#ACE1AF;
+    border-radius:10px;
+  padding: 5px 5px;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+  float: right;
+}
+
+.buttonstyle1:hover {
+  background-color: #ACE1AF;
+   border-color:#ACE1AF;
+    border-radius:10px;
+  padding: 5px 5px;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+  float: right;
+}
+
+.buttonstyle1:focus {
+    outline-color: transparent;
+    outline-style:solid;
+    box-shadow: 0 0 0 4px #ACE1AF;
+}

@@ -102,7 +102,9 @@ const marginalY = d3.scaleLinear()
 // ----------------------------------------------------------------------
 const matrixChart = padded.append('g.matrixChart')
   .translate([countBarWidth,0]);
-  
+// Variable to keep track of the currently highlighted count bar
+let currentHighlighted = null;
+
 matrixChart.selectAll('.currentRow')
   .data(data)
   .enter().append('g.currentRow')
@@ -111,7 +113,9 @@ matrixChart.selectAll('.currentRow')
     
     // Initially hidden box for highlighting purposes. 
     const highlightRect = d3.select(this)
-      .selectAppend('rect.highlightRect')
+      /*.selectAppend('rect.highlightRect')*/
+      .append('rect')
+      .attr('class', 'highlightRect hoverInfo') // Use both classes for styling and selection
       .at({
         width: w + 20,
         x: -(countBarWidth + countBarPadding*2),
@@ -182,6 +186,8 @@ matrixChart.selectAll('.currentRow')
         y: countBarPadding/2,
         width: countX(0) - countX(currentEntry.count),
       })
+
+
     
     countBar.append('text')
       .text(countFormat(currentEntry.count))
@@ -205,12 +211,31 @@ matrixChart.selectAll('.currentRow')
         opacity: 0,
         'class': 'hoverInfo'
       })
+
   })
   .on('mouseover', function(d){
     d3.select(this).selectAll('.hoverInfo').attr('opacity', 1)
   })
   .on('mouseout', function(d){
+     if (this !== currentHighlighted) {
     d3.select(this).selectAll('.hoverInfo').attr('opacity', 0)
+     }
+  })
+  .on('click', function(d, i) {
+    resetHighlights(); // Reset highlights for both count and marginal bars
+    
+    // If there's a currently highlighted count bar, reset its highlightRect opacity
+    if (currentHighlighted) {
+      d3.select(currentHighlighted).selectAll('.hoverInfo').attr('opacity', 0);
+    }
+
+    // Highlight the clicked count bar by showing its highlightRect
+    d3.select(this).select('.highlightRect').attr('opacity', 1);
+
+    // Update the reference to the currently highlighted count bar
+    currentHighlighted = this;
+    //send to shiny
+    sendClickedPatternToShiny(d.pattern);
   })
 // ----------------------------------------------------------------------
 // Axes
@@ -274,15 +299,34 @@ marginalCountAxis.select('text').remove() // hides the first zero so we can doub
 const marginalCountsChart = padded.append('g.marginalCountsChart')
   .translate([countBarWidth,0]);
 
+let currentMarginalHighlighted = null; // Track the currently highlighted marginal bar
+
 const marginalBars = marginalCountsChart.selectAll('.marginalCounts')
   .data(options.marginalData)
   .enter().append('g')
+  .attr('class', 'marginalCounts')
   .translate(d => [matrixWidthScale(d.code), marginalY(d.count)])
   .on('mouseover',function(d){
     d3.select(this).selectAll('.margingMouseoverInfo').attr('opacity', 1);
   })
-  .on('mouseout',function(d){
-    d3.select(this).selectAll('.margingMouseoverInfo').attr('opacity', 0);
+  .on('mouseout', function(d) {
+    if (this !== currentMarginalHighlighted) { // Only reset opacity if it's not the currently selected marginal bar
+      d3.select(this).selectAll('.margingMouseoverInfo').attr('opacity', 0);
+    }
+  })
+  .on('click', function(event, d) {
+    resetHighlights(); // Reset highlights for both count and marginal bars
+    
+    // Reset highlight of previously selected marginal bar, if any
+    if (currentMarginalHighlighted && currentMarginalHighlighted !== this) {
+      d3.select(currentMarginalHighlighted).selectAll('.margingMouseoverInfo').attr('opacity', 0);
+    }
+
+    // Highlight the clicked marginal bar by showing its .margingMouseoverInfo elements
+    d3.select(this).selectAll('.margingMouseoverInfo').attr('opacity', 1);
+
+    // Update reference to currently highlighted marginal bar
+    currentMarginalHighlighted = this;
   })
 
 marginalBars.append('rect')
@@ -338,3 +382,19 @@ marginalBars.append('text')
     opacity: 0,
     "class": "margingMouseoverInfo"
   })
+  
+function resetHighlights() {
+    // Reset highlight for marginal bars
+    if (currentMarginalHighlighted) {
+        d3.select(currentMarginalHighlighted).selectAll('.margingMouseoverInfo').attr('opacity', 0);
+        currentMarginalHighlighted = null; // Clear the reference
+    }
+
+    // Reset highlight for count bars (assuming similar logic and variable naming)
+    if (currentHighlighted) {
+        d3.select(currentHighlighted).selectAll('.hoverInfo').attr('opacity', 0);
+        currentHighlighted = null; // Clear the reference
+    }
+}
+
+

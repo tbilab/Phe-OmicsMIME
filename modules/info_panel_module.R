@@ -8,16 +8,27 @@ info_panel_UI = function(id,app_ns){
         style='overflow-y: auto; padding-right: 0px;padding-top: 0px;padding-bottom: 0px;padding-left: 5px;height:106vh;',
         width = 12,
         solidHeader=F,
-        div(strong("Pre-selected Nodes"),style="font-size: 1.5rem;color:black"),
+        
+        div(class = "subtitle",
+          "Pre-selected Nodes",style="padding-top:10px;"),
         textOutput(ns("preselected_nodes")),
+        # hr(),
+        # div(strong("Correlation with major systems"),style="font-size: 1.5rem;color:black"),
         hr(),
-        div(strong("User Manual"),style="font-size: 1.5rem;color:black"),
-        div(strong("Multipartite Network"),style="font-size:1.3rem;color:black"),
-        p("Interact with the network plot by selecting the nodes of interest; these clicked nodes will be highlighted in red for easy identification. Additionally, any other nodes that are connected to all of the selected nodes will be accentuated in their respective category colors. This feature not only distinguishes your selections but also visually emphasizes their connections within the network."),
-        div(strong("Upset Plot"),style="font-size:1.3rem;color:black"),
-        p("The upset plot is interactive with the multipartite network plot. When nodes in the network plot are selected, their intersections are dynamically represented in the upset plot."),
-        div(strong("Information Table"),style="font-size:1.3rem;color:black"),
-        p("The information table is designed to interact dynamically with the multipartite network plot. It highlights the universal connectivity by displaying nodes that are directly connected to the nodes selected by the user. Additionally, it features synchronized nodes, which represent nodes linked to common shared nodes that are connected with all the nodes selected by the user. This interactivity provides a comprehensive view of both direct and indirect relationships within the network.")
+        div(class = "subtitle",
+          "User Manual",
+            style="font-size: 1.5rem;color:black;padding:0px"
+            ),
+        
+        div(class = "subtitle","Bipartite Network"),
+        p("Interact with the network plot by selecting the nodes of interest; these clicked nodes will be highlighted in red for easy identification. Additionally, any other nodes that are connected to all of the selected nodes will be highlighted in their respective category colors. This feature not only distinguishes your selections but also visually emphasizes their connections within the network."),
+        div(class = "subtitle","Multimorbidity Upset Plot"),
+        p("The upset plot is interactive with the bipartite network plot. When nodes in the network plot are selected and update upset button is clicked, their intersections are dynamically represented in the upset plot."),
+        div(class = "subtitle","Shared Mechanism"),
+        p("The shared mechanism is designed to interact dynamically with the bipartite network plot. It highlights the universal connectivity by displaying 1st layer nodes that are directly connected to all the nodes selected by the user. Additionally, it features synchronized nodes, which represent nodes linked to 1st layer nodes. This interactivity provides a comprehensive view of both direct and indirect relationships within the network."),
+        div(class = "subtitle","Shared Biological Pathways"),
+        p("This module displays the results of enriched pathway analysis, corresponding to genes associated with the disease phenotypes selected by the user in the bipartite network. It shows the relevant biological pathways shared among these phenotypes. If user select biomolecule nodes, the biological pathway analysis will be hidden")
+       
     )
     
   )

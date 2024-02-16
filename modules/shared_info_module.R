@@ -1,13 +1,16 @@
 shared_info_UI = function(id,app_ns){
   ns <- . %>% NS(id)() %>% app_ns()
   
-  tagList(
-    box(title = strong("Shared Mechanism"),offset = 0, 
+  # tagList(
+    fluidRow(
+      column(12,offset = 0, style='padding:0px;',
+        box(title = strong("Shared Mechanism"),offset = 0,style='padding:0px;', 
             width = 12,
             solidHeader=F,
         style='overflow-y: auto; padding-right: 0px;padding-top: 0px;padding-bottom: 0px;padding-left: 5px;height:30vh;',
+        
         fluidRow(
-        column(12,div(strong("Selected Nodes:",style="font-size: 1.5rem;color:black"))),
+        column(12,div(class = "subtitle","Selected Nodes:",style="font-size: 1.5rem;color:black;padding-top:8px;padding-left:5px;")),
         column(12,textOutput(ns("node_info"))),
         hr(),
         # div(strong("Choose node from the table and click on 'GPT-API' to discover the existing disease multimorbidities associated with your selected node."),
@@ -22,18 +25,19 @@ shared_info_UI = function(id,app_ns){
           column(6,
                  ##1st layer shared 
                  # div(
-                 div(strong("1st Layer: Shared Nodes Among Selected Nodes",style="font-size: 1.5rem;color:black")),
-                 downloadButton(ns("download_table1"), "Download Results",style="font-size: 1.5rem;float:left;background-color:#D3D3D3;"),
+                 div(class = "subtitle","1st Layer: Shared Nodes Among Selected Nodes"),
+                 downloadButton(class="buttonstyle",ns("download_table1"), "Download Results"),
                  DTOutput(ns("conn_first_table"))
                  ),
           column(6,
                  # div(
-                 div(strong("2nd Layer: Nodes Connected to 1st Layer Nodes",style="font-size: 1.5rem;color:black")),
-                 downloadButton(ns("download_table2"), "Download Results",style="font-size: 1.5rem;float:left;background-color:#D3D3D3;"),
+                 div(class = "subtitle","2nd Layer: Nodes Connected to 1st Layer Nodes"),
+                 downloadButton(class="buttonstyle",ns("download_table2"), "Download Results"),
                  DTOutput(ns("conn_second_table"))
                  )
           )
     )
+  )
   )
   )
 }
@@ -44,44 +48,47 @@ shared_info_Server <- function(input,output,session,current_phecode,current_desc
   # observeEvent(clicked_node_id,{
   
   if(is.null(clicked_node_id())) {
-    ##1st layer connected nodes
-    conn_nodes = purrr::map(str_split(current_description,","),function(x){
-      conn_first = tidy_connect %>%
-        filter(institution == current_institution) %>%
-        filter(from %in% x) %>%
-        dplyr::select(node = to) %>%
-        bind_rows(tidy_connect %>%
-                    filter(institution == current_institution) %>%
-                    filter(to %in% x) %>%
-                    dplyr::select(node = from)) %>%
-        distinct(node) %>%
-        pull(node)
-      conn_first
-    })
-    shared_nodes_first = data.frame(ID=Reduce(intersect,conn_nodes))
-    if(nrow(shared_nodes_first)!=0){
-      shared_nodes_first = shared_nodes_first %>% left_join(.,nodes %>% dplyr::rename(ID=node),by="ID")
-    } else{
-      shared_nodes_first = shared_nodes_first 
-    }
-      
-    
-    ##second layer connection nodes
-    shared_nodes_second = tidy_connect %>%
-      filter(institution == current_institution) %>%
-      filter(from %in% shared_nodes_first$ID) %>%
-      dplyr::select(node = to,connection_type) %>%
-      bind_rows(tidy_connect %>%
-                  filter(institution == current_institution) %>%
-                  filter(to %in% shared_nodes_first$ID) %>%
-                  dplyr::select(node = from,connection_type)) %>%
-      distinct(node,.keep_all = T) %>%
-      rename(ID=node,type=connection_type) %>%
-      mutate(type = ifelse(ID %in% phecode_def$description,"phenotype",type))
+    # ##1st layer connected nodes
+    # conn_nodes = purrr::map(str_split(current_description,","),function(x){
+    #   conn_first = tidy_connect %>%
+    #     filter(institution == current_institution) %>%
+    #     filter(from %in% x) %>%
+    #     dplyr::select(node = to) %>%
+    #     bind_rows(tidy_connect %>%
+    #                 filter(institution == current_institution) %>%
+    #                 filter(to %in% x) %>%
+    #                 dplyr::select(node = from)) %>%
+    #     distinct(node) %>%
+    #     pull(node)
+    #   conn_first
+    # })
+    # shared_nodes_first = data.frame(ID=Reduce(intersect,conn_nodes))
+    # if(nrow(shared_nodes_first)!=0){
+    #   shared_nodes_first = shared_nodes_first %>% left_join(.,nodes %>% dplyr::rename(ID=node),by="ID")
+    # } else{
+    #   shared_nodes_first = shared_nodes_first 
+    # }
+    #   
+    # 
+    # ##second layer connection nodes
+    # shared_nodes_second = tidy_connect %>%
+    #   filter(institution == current_institution) %>%
+    #   filter(from %in% shared_nodes_first$ID) %>%
+    #   dplyr::select(node = to,connection_type) %>%
+    #   bind_rows(tidy_connect %>%
+    #               filter(institution == current_institution) %>%
+    #               filter(to %in% shared_nodes_first$ID) %>%
+    #               dplyr::select(node = from,connection_type)) %>%
+    #   distinct(node,.keep_all = T) %>%
+    #   dplyr::rename(ID=node,type=connection_type) %>%
+    #   mutate(type = ifelse(ID %in% phecode_def$description,"phenotype",type))
     
     ##selected node ID
-    code_id <- reactiveVal(glue("NULL"))
+    code_id <- reactiveVal(glue("Please select a node in the bipartite network"))
     output$node_info <- renderText(glue("{code_id()}"))
+    
+    shared_nodes_first = data.frame(ID=c(),type=c())
+    shared_nodes_second = data.frame(ID=c(),type=c())
     ##1st layer connected nodes information
     output$conn_first_table <- renderDT({
       datatable(shared_nodes_first,
@@ -164,42 +171,67 @@ shared_info_Server <- function(input,output,session,current_phecode,current_desc
                   filter(to %in% shared_nodes_first$ID) %>%
                   dplyr::select(node = from,connection_type)) %>%
       distinct(node,.keep_all = T) %>%
-      rename(ID=node,type=connection_type) %>%
+      dplyr::rename(ID=node,type=connection_type) %>%
       mutate(type = ifelse(ID %in% phecode_def$description,"phenotype",type))
+    
+    ## add pvalue, etc.
+    shared_nodes_first = shared_nodes_first %>%
+      left_join(., tidy_connect %>% filter((from %in% clicked_node_id() & to %in% shared_nodes_first$ID) | 
+                                             (to %in% clicked_node_id() & from %in% shared_nodes_first$ID)) %>%
+                  dplyr::select(from,to,hazard_ratio,pvalue,phecode_category) %>%
+                  bind_rows(
+                    tidy_connect %>% filter((from %in% clicked_node_id() & to %in% shared_nodes_first$ID) | 
+                                              (to %in% clicked_node_id() & from %in% shared_nodes_first$ID)) %>%
+                      dplyr::select(to,from,hazard_ratio,pvalue)
+                  ) %>%
+                  dplyr::select(ID=from,hazard_ratio,pvalue),by="ID") %>%
+      distinct(.,.keep_all = T)
+    
+    shared_nodes_second = shared_nodes_second %>%
+      left_join(., tidy_connect %>% filter((from %in% clicked_node_id() & to %in% shared_nodes_first$ID) | 
+                                             (to %in% clicked_node_id() & from %in% shared_nodes_first$ID)) %>%
+                  dplyr::select(from,to,hazard_ratio,pvalue,phecode_category) %>%
+                  bind_rows(
+                    tidy_connect %>% filter((from %in% clicked_node_id() & to %in% shared_nodes_first$ID) | 
+                                              (to %in% clicked_node_id() & from %in% shared_nodes_first$ID)) %>%
+                      dplyr::select(to,from,hazard_ratio,pvalue)
+                  ) %>%
+                  dplyr::select(ID=from,hazard_ratio,pvalue),by="ID") %>%
+      distinct(.,.keep_all = T)
     
     ##selected node ID
     code_id <- reactiveVal(glue("{clicked_node_id()};"))
     output$node_info <- renderText(glue("{code_id()}"))
-    observeEvent(return_preselected(),{
-      code_id <- code_id(glue(NULL))
-      output$node_info <- renderText(glue("{code_id()}"))
-
-      ##1st layer connected nodes information
-      output$conn_first_table <- renderDT({
-        datatable(data.frame(ID=c(),type=c()),
-                  rownames = FALSE,
-                  #options = list(displayStart = start_index - 2),
-                  options = list(
-                    scrollX = "300px",
-                    scrollY = "300px",
-                    pageLength = 30, lengthChange = FALSE
-                  )
-        )
-      },server = FALSE)
-
-      ##2nd layer connected nodes information
-      output$conn_second_table <- renderDT({
-        datatable(data.frame(ID=c(),type=c()),
-                  rownames = FALSE,
-                  #options = list(displayStart = start_index - 2),
-                  options = list(
-                    scrollX = "300px",
-                    scrollY = "300px",
-                    pageLength = 30, lengthChange = FALSE
-                  )
-        )
-      },server = FALSE)
-    })
+    # observeEvent(return_preselected(),{
+    #   code_id <- code_id(glue(NULL))
+    #   output$node_info <- renderText(glue("{code_id()}"))
+    # 
+    #   ##1st layer connected nodes information
+    #   output$conn_first_table <- renderDT({
+    #     datatable(data.frame(ID=c(),type=c()),
+    #               rownames = FALSE,
+    #               #options = list(displayStart = start_index - 2),
+    #               options = list(
+    #                 scrollX = "300px",
+    #                 scrollY = "300px",
+    #                 pageLength = 30, lengthChange = FALSE
+    #               )
+    #     )
+    #   },server = FALSE)
+    # 
+    #   ##2nd layer connected nodes information
+    #   output$conn_second_table <- renderDT({
+    #     datatable(data.frame(ID=c(),type=c()),
+    #               rownames = FALSE,
+    #               #options = list(displayStart = start_index - 2),
+    #               options = list(
+    #                 scrollX = "300px",
+    #                 scrollY = "300px",
+    #                 pageLength = 30, lengthChange = FALSE
+    #               )
+    #     )
+    #   },server = FALSE)
+    # })
     
     ##1st layer connected nodes information
     output$conn_first_table <- renderDT({

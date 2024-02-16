@@ -35,7 +35,7 @@ phecode_in = unique(c(normalize_phecodes(ukbb_res$Phenotype),vumc_res$phecode))
 phecodes <- phecode_def %>% dplyr::select(phecode,description) %>%
   dplyr::select(phecode) %>%
   join_phecode_info(cols_to_join = c("description", "category")) %>%
-  rename(Description=description) %>%
+  dplyr::rename(Description=description) %>%
   filter(phecode %in% phecode_in)
 # # #jak2
 # phecodes = bind_rows(phecodes,data.frame(phecode=c("other aUPD","overlap v617f aUPD","GGCC/GGCC","GGCC/TCTT"),
@@ -65,7 +65,7 @@ nodes = ukbb_res %>%
 #                                    type=rep("phecode",4)))
   
 phecodes = phecodes %>%
-  rename(code=phecode)
+  dplyr::rename(code=phecode)
 
 genes = nodes %>%
   filter(type == "gene") %>%

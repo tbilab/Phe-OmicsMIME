@@ -10,7 +10,6 @@ data_loading_UI <- function(id) {
   ns <- NS(id)
   
     fluidPage(
-      
       useShinydashboard(),
       # use a gradient in background
       setBackgroundColor(
@@ -19,20 +18,21 @@ data_loading_UI <- function(id) {
         direction = "bottom"
       ),
       titlePanel(
-        title = "Phe-Omics Multimorbidity Explorer"
+         div(h4("Phe-Omics Multimorbidity Explorer",style='padding-top:0px;padding-bottom:0px;padding-left:10px'),style='margin-top:-15px;margin-bottom:-5px'),
+         windowTitle = "Phe-Omics Multimorbidity Explorer"
       ),
       
         sidebarLayout(
           sidebarPanel(
             style = "background-color: white;height:90vh",
             
-          selectInput(ns("institution"),label = strong("Selecting Institution",style="font-size: 2rem;color:black;float:left"),
+          selectInput(ns("institution"),label = div(class = "subtitle","Selecting Institution",style="font-size: 2rem;color:black;float:left"),
                       choices = list("UKB"="ukb","VUMC"="vumc")),
           hr(),
           ##select phecode/molecular centric
           # div(strong("Exploring Disease Phenotype or Biomolecules?",style="font-size: 2rem;color:black")),
           # DTOutput(ns("data_selection")),
-          selectInput(ns("data_selection"),label = strong("Exploring Disease Phenotypes or Biomolecules?",style="font-size: 2rem;color:black;float:left"),
+          selectInput(ns("data_selection"),label = div(class = "subtitle","Exploring Disease Phenotypes or Biomolecules?",style="font-size: 2rem;color:black;float:left"),
                       choices = list("Phenotype"="phecode","Gene"="gene","Protein"="protein","Metabolite"="metabolite")),
           div("Current selections:",style = "font-size:1.7rem;color: black;
                                                 padding-left: 10px;
@@ -43,17 +43,17 @@ data_loading_UI <- function(id) {
                      display: flex;align-items:
                      center;justify-content: space-evenly;"),
           hr(),
-          div(actionButton(ns("reset_selection"), "Reset Selection",style="float:right;background-color: #D3D3D3;display: inline-block; margin-left: 15px;"),
-          actionButton(ns("visualize"), "Visualize Multipartite Network",style="float:right;background-color: #D3D3D3;display: inline-block; ")
+          div(actionButton(ns("reset_selection"), "Reset Selection",class="buttonstyle1"),
+          actionButton(ns("visualize"), "Visualize Bipartite Network",class="buttonstyle1")
           )
           
         ),
         
         mainPanel(style = "background-color: white;height:90vh;",
-          div(strong("Select Disease Phenotype or Biomolecule of Interest"),style="padding-top: 20px;font-size: 2rem;color:black;float:left"),
+          div(class = "subtitle","Select Disease Phenotype or Biomolecule of Interest",style="padding-top: 20px;font-size: 2rem;color:black;float:left"),
           DTOutput(ns("code_selection")),
           hr(),
-          actionButton(ns("bring_top"), "Bring Selected Rows Top",style="float:right;background-color: #D3D3D3;")
+          actionButton(ns("bring_top"), "Bring Selected Rows Top",class="buttonstyle1")
         )
         ) #full panel
     )
